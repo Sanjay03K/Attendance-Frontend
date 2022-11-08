@@ -1,0 +1,7 @@
+/*!
+      =========================================================
+      * Purity UI Dashboard - v1.0.0
+      =========================================================
+      */
+::-webkit-scrollbar{width:.3vw;height:.3vw;background:transparent}::-webkit-scrollbar-track{margin:.2vw;background:transparent}::-webkit-scrollbar-thumb{background-color:grey;border-radius:100vw}::-webkit-scrollbar-thumb:hover{background-color:#a9a9a9;border-radius:100vw}::-webkit-scrollbar-thumb:active{background-color:orange;border-radius:100vw}.spinner1{margin:auto;width:70px;text-align:center}.spinner1>div{width:18px;height:18px;background-color:#fff;border-radius:100%;display:inline-block;-webkit-animation:sk-bouncedelay 1.4s ease-in-out infinite both;animation:sk-bouncedelay 1.4s ease-in-out infinite both}.spinner1 .bounce1{-webkit-animation-delay:-.32s;animation-delay:-.32s}.spinner1 .bounce2{-webkit-animation-delay:-.16s;animation-delay:-.16s}@-webkit-keyframes sk-bouncedelay{0%,80%,to{-webkit-transform:scale(0)}40%{-webkit-transform:scale(1)}}@keyframes sk-bouncedelay{0%,80%,to{-webkit-transform:scale(0);transform:scale(0)}40%{-webkit-transform:scale(1);transform:scale(1)}}
+/*# sourceMappingURL=main.e7ee010c.chunk.css.map */

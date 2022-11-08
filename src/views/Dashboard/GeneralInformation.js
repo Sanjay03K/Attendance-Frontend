@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import axios from "axios";
+import axios, { AxiosRequestConfig } from 'axios';
+import fs from 'fs';
 
 // Chakra imports
 import {
@@ -25,6 +26,8 @@ import CardHeader from "components/Card/CardHeader.js";
 import CardBody from "components/Card/CardBody.js";
 import { Select } from '@chakra-ui/react'
 import { useToast } from '@chakra-ui/react'
+import * as FileSaver from 'file-saver';
+import * as XLSX from 'xlsx';
 
 function GeneralInformation() {
   const [data, setData] = useState([]);
@@ -44,6 +47,8 @@ function GeneralInformation() {
   const textColor = useColorModeValue("gray.700", "white");
   const inputBg = useColorModeValue("white", "gray.800");
   const mainorange = useColorModeValue("orange.300", "orange.300");
+  const[csvData,setCsvData]=React.useState([{"Name":"Gowri"}, {"Name":"Siva"},{"Name":"Teja"},{"Name":"USA"}])
+  const[fileName,setFileName]=React.useState("Reports");
 
   function submit() {
     if(year==null || dept==null || sem==null || year=='' || dept=='' || sem==''){
@@ -99,6 +104,7 @@ function GeneralInformation() {
           //   toastIdRef.current = toast({ description: "No report found", status: 'info',isClosable: true })
           // }
           // else{
+            localStorage.setItem("data",results.data)
             setData(results.data)
             isload(false)
           // }
@@ -112,9 +118,84 @@ function GeneralInformation() {
   }
 
   function download_report() {
-    toastIdRef.current = toast({ description: "Development in progess", status: 'warning',isClosable: true })
-    // console.log(data);
+    var email = localStorage.getItem("email")
+    var auth_token = localStorage.getItem("token")
+    let formdata = new FormData();
+    formdata.append("email",email)
+    // axios({
+    //   url:"http://localhost:5000/download_report",
+    //   method:"POST",
+    //   responseType:'blob',
+    //   data:{
+    //     data:data,
+    //     sem:sem,
+    //     year:year
+    //   }
+    // }).then((response)=>{     
+    //   let headerLine = response.headers['content-disposition'];
+    //   let startFileNameIndex = headerLine.indexOf('"') + 1
+    //   let endFileNameIndex = headerLine.lastIndexOf('"')
+    //   let filename = headerLine.substring(startFileNameIndex, endFileNameIndex)
+    //   const url = window.URL.createObjectURL(new Blob([response.data], 
+    //   {type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}));
+    //   const link = document.createElement('a');
+   
+    //   link.href = url;
+    //   link.setAttribute('download', filename);
+    //   document.body.appendChild(link);
+    //   link.click();
+    //   link.remove();
+    // })
+    axios.get("http://localhost:5000/download_report?data="+JSON.stringify(localStorage.setItem("data"))+"&year="+year+"&sem="+sem,+"&dept="+dept, {
+      headers:{'Content-Type':'blob'},
+      responseType: 'arraybuffer'
+     }).then(response => {
+        let headerLine = response.headers['content-disposition'];
+        let startFileNameIndex = headerLine.indexOf('"') + 1
+        let endFileNameIndex = headerLine.lastIndexOf('"')
+        let filename = headerLine.substring(startFileNameIndex, endFileNameIndex)
+        console.log(response);
+        const url = window.URL.createObjectURL(new Blob([response.data], 
+        {type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}));
+        const link = document.createElement('a');
+     
+        link.href = url;
+        link.setAttribute('download', filename);
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+     }).catch(error => {
+        console.log(error)
+     })
+
+
+     
   }
+
+  const downloadXLSFile = async () => {
+    let s_url = "http://localhost:5000/download_report?data="+JSON.stringify(data)
+    // Its important to set the 'Content-Type': 'blob' and responseType:'arraybuffer'.
+    const headers = {'Content-Type': 'blob'};
+    const config = {method: 'GET', url: s_url, responseType: 'arraybuffer', headers};
+    
+    try {
+        const response = await axios(config);
+        
+        const outputFilename = dept+"_"+year+"_"+sem+"-"+Date.now()+".xlsx";
+
+        // If you want to download file automatically using link attribute.
+        const url = URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', outputFilename);
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        // OR you can save/write file locally.
+    } catch (error) {
+        throw Error(error);
+    }
+}
 
   return (
     <Flex direction="column" pt={{ base: "120px", md: "75px" }}>
@@ -361,7 +442,7 @@ function GeneralInformation() {
           <Button
             mt="1em"
             onClick={()=>{
-              download_report()
+              downloadXLSFile()
             }}
             colorScheme="blue"
             alignSelf="flex-end"
