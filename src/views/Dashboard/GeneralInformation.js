@@ -134,7 +134,7 @@ function GeneralInformation() {
     } catch (error) {
         throw Error(error);
     }
-}
+  }
 
   return (
     <Flex direction="column" pt={{ base: "120px", md: "75px" }}>
