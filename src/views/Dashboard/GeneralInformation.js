@@ -117,61 +117,6 @@ function GeneralInformation() {
     }
   }
 
-  function download_report() {
-    var email = localStorage.getItem("email")
-    var auth_token = localStorage.getItem("token")
-    let formdata = new FormData();
-    formdata.append("email",email)
-    // axios({
-    //   url:"http://localhost:5000/download_report",
-    //   method:"POST",
-    //   responseType:'blob',
-    //   data:{
-    //     data:data,
-    //     sem:sem,
-    //     year:year
-    //   }
-    // }).then((response)=>{     
-    //   let headerLine = response.headers['content-disposition'];
-    //   let startFileNameIndex = headerLine.indexOf('"') + 1
-    //   let endFileNameIndex = headerLine.lastIndexOf('"')
-    //   let filename = headerLine.substring(startFileNameIndex, endFileNameIndex)
-    //   const url = window.URL.createObjectURL(new Blob([response.data], 
-    //   {type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}));
-    //   const link = document.createElement('a');
-   
-    //   link.href = url;
-    //   link.setAttribute('download', filename);
-    //   document.body.appendChild(link);
-    //   link.click();
-    //   link.remove();
-    // })
-    axios.get("http://localhost:5000/download_report?data="+JSON.stringify(localStorage.setItem("data"))+"&year="+year+"&sem="+sem,+"&dept="+dept, {
-      headers:{'Content-Type':'blob'},
-      responseType: 'arraybuffer'
-     }).then(response => {
-        let headerLine = response.headers['content-disposition'];
-        let startFileNameIndex = headerLine.indexOf('"') + 1
-        let endFileNameIndex = headerLine.lastIndexOf('"')
-        let filename = headerLine.substring(startFileNameIndex, endFileNameIndex)
-        console.log(response);
-        const url = window.URL.createObjectURL(new Blob([response.data], 
-        {type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}));
-        const link = document.createElement('a');
-     
-        link.href = url;
-        link.setAttribute('download', filename);
-        document.body.appendChild(link);
-        link.click();
-        link.remove();
-     }).catch(error => {
-        console.log(error)
-     })
-
-
-     
-  }
-
   const downloadXLSFile = async () => {
     let s_url = "http://localhost:5000/download_report?data="+JSON.stringify(data)
     // Its important to set the 'Content-Type': 'blob' and responseType:'arraybuffer'.
