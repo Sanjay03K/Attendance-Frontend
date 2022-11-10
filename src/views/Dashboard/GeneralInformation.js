@@ -47,8 +47,6 @@ function GeneralInformation() {
   const textColor = useColorModeValue("gray.700", "white");
   const inputBg = useColorModeValue("white", "gray.800");
   const mainorange = useColorModeValue("orange.300", "orange.300");
-  const[csvData,setCsvData]=React.useState([{"Name":"Gowri"}, {"Name":"Siva"},{"Name":"Teja"},{"Name":"USA"}])
-  const[fileName,setFileName]=React.useState("Reports");
 
   function submit() {
     if(year==null || dept==null || sem==null || year=='' || dept=='' || sem==''){
@@ -100,14 +98,9 @@ function GeneralInformation() {
           toastIdRef.current = toast({ description: "No report found", status: 'info',isClosable: true })
         }
         else{
-          // if (results.data.length!=2) {
-          //   toastIdRef.current = toast({ description: "No report found", status: 'info',isClosable: true })
-          // }
-          // else{
-            localStorage.setItem("data",results.data)
-            setData(results.data)
-            isload(false)
-          // }
+          localStorage.setItem("data",results.data)
+          setData(results.data)
+          isload(false)
         }
       }).catch((err)=>{
         if (err.response.data!=undefined) {

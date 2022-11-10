@@ -17,6 +17,7 @@ import axios from "axios";
 export default function Dashboard() {
   // Chakra Color Mode
   const toast = useToast()
+  const toastIdRef = React.useRef()
   const textColor = useColorModeValue("gray.700", "white");
   const [ongo, setongo] = useState([])
   const [upco, setupco] = useState([])
@@ -96,6 +97,29 @@ export default function Dashboard() {
     fetchdata()
   }, []);
 
+  function route_check() {
+    var email = localStorage.getItem("email")
+    var auth_token = localStorage.getItem("token")
+    var code = localStorage.getItem("code")
+    var id  = localStorage.getItem("id")
+    axios.post("http://localhost:5000/attendance_marked", {
+      email,
+      auth_token,
+      code,
+      id 
+    }).then((results) => {
+      history.push("/admin/ExtracurricularData")
+    }).catch((err)=>{
+      if (err.response != undefined) {
+        if (err.response.data == 'marked') {
+          toastIdRef.current = toast({ description: 'Attendance already marked!', status: 'info',isClosable: true })
+        } else {
+          toastIdRef.current = toast({ description: 'Server Error! Kindly contact admin.', status: 'error',isClosable: true })
+        }
+      }
+    })
+  }
+
   return (
     <Flex flexDirection="column" pt={{ base: "500px", md: "75px" }}>
       <Text
@@ -120,7 +144,7 @@ export default function Dashboard() {
               localStorage.setItem("year",items.year)
               localStorage.setItem("sem",items.sem)
               localStorage.setItem("code",items.code)
-              history.push("/admin/ExtracurricularData")
+              route_check()
             }}>
               <Card minH="100px">
                 <CardBody>

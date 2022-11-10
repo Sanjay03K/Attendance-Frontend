@@ -22,11 +22,12 @@ import Card from "components/Card/Card.js";
 import CardHeader from "components/Card/CardHeader.js";
 import CardBody from "components/Card/CardBody.js";
 import { useToast } from '@chakra-ui/react'
-import { Checkbox } from '@chakra-ui/react'
+import { useHistory } from "react-router-dom";
 
 function ExtraCurricularData() {
   const toast = useToast()
   const toastIdRef = React.useRef()
+  const history = useHistory();
 
   function submit() {
     setload(true)
@@ -37,14 +38,16 @@ function ExtraCurricularData() {
     var dept = localStorage.getItem("dept")
     var year = localStorage.getItem("year")
     var sem = localStorage.getItem("sem")
-    axios.post("http://localhost:5000/attendance", {
+    var id  = localStorage.getItem("id")
+    axios.post("http://localhost:5000/attendance_marked", {
       email,
       auth_token,
       data,
       dept,
       year,
       sem,
-      code
+      code,
+      id
     }).then((results)=>{
       toastIdRef.current = toast({ description: results.data, status: 'success',isClosable: true })
       setload(false)
@@ -64,18 +67,27 @@ function ExtraCurricularData() {
     var dept = localStorage.getItem("dept")
     var year = localStorage.getItem("year")
     var sem = localStorage.getItem("sem")
+    var id  = localStorage.getItem("id")
+    var code = localStorage.getItem("code")
 
     axios.post("http://localhost:5000/getdetails", {
       email,
       auth_token,
       dept,
       year,
-      sem
+      sem,
+      id,
+      code
     }).then((items) => {
       for (let i = 0; i < items.data.length; i++) {
         present[items.data[i].register_no] = 1        
       }
       setdata(items.data);
+    }).catch((err)=>{
+      toastIdRef.current = toast({ description: 'Page can\'t be accessed this way. Redirecting...', status: 'warning',isClosable: true })
+      setTimeout(() => {
+        history.push('/admin/dashboard')
+      }, 2000)
     });
   }, [])
 
