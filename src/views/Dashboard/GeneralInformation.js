@@ -119,16 +119,11 @@ function GeneralInformation() {
 
   const downloadXLSFile = async () => {
     let s_url = "http://localhost:5000/download_report?data="+JSON.stringify(data)
-    // Its important to set the 'Content-Type': 'blob' and responseType:'arraybuffer'.
     const headers = {'Content-Type': 'blob'};
     const config = {method: 'GET', url: s_url, responseType: 'arraybuffer', headers};
-    
     try {
-        const response = await axios(config);
-        
+        const response = await axios(config);        
         const outputFilename = dept+"_"+year+"_"+sem+"-"+Date.now()+".xlsx";
-
-        // If you want to download file automatically using link attribute.
         const url = URL.createObjectURL(new Blob([response.data]));
         const link = document.createElement('a');
         link.href = url;
@@ -136,7 +131,6 @@ function GeneralInformation() {
         document.body.appendChild(link);
         link.click();
         link.remove();
-        // OR you can save/write file locally.
     } catch (error) {
         throw Error(error);
     }
