@@ -48,12 +48,29 @@ function ExtraCurricularData() {
       sem,
       code,
       id
-    }).then((results)=>{
-      toastIdRef.current = toast({ description: results.data, status: 'success',isClosable: true })
-      setload(false)
+    }).then(()=>{
+      axios.post("http://localhost:5000/attendance",{
+        email,
+        auth_token,
+        data,
+        dept,
+        year,
+        sem,
+        code,
+        id
+      }).then((result)=>{
+        toastIdRef.current = toast({ description: result.data, status: 'success',isClosable: true })
+        setload(false)
+      }).catch((error)=>{
+        toastIdRef.current = toast({ description: error.response.data, status: 'error',isClosable: true })
+        setload(false)
+      })
     }).catch((err)=>{
-      toastIdRef.current = toast({ description: err.response.data, status: 'error',isClosable: true })
+      toastIdRef.current = toast({ description: "Attendance already marked! Redirecting to dashboard...", status: 'info',isClosable: true })
       setload(false)
+      setTimeout(() => {
+        history.push('/admin/dashboard')
+      }, 2000)
     })
   }
 
