@@ -177,6 +177,11 @@ export default function Dashboard(props) {
           base: "100%",
           xl: "calc(100% - 275px)",
         }}
+        mt={{
+          sm: "-18em",
+          xl: 1,
+          md: 1
+        }}
       >
         <Portal>
           <AdminNavbar
