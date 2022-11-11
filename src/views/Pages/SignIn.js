@@ -47,7 +47,7 @@ function SignIn() {
     else{
       let res = null
       try {
-        res = await axios.post('http://localhost:5000/login', {
+        res = await axios.post('http://192.168.1.6:5000/login', {
           email,
           password, 
         })

@@ -59,7 +59,7 @@ function GeneralInformation() {
     else{
       var email = localStorage.getItem("email")
       var auth_token = localStorage.getItem("token")
-      axios.post("http://localhost:5000/report", {
+      axios.post("http://192.168.1.6:5000/report", {
         email,
         auth_token,
         year,
@@ -91,7 +91,7 @@ function GeneralInformation() {
       toastIdRef.current = toast({ description: "Select all the fields", status: 'warning',isClosable: true })
     }
     else{
-      axios.post("http://localhost:5000/full_report", {
+      axios.post("http://192.168.1.6:5000/full_report", {
         email,
         auth_token,
         date,
@@ -117,7 +117,7 @@ function GeneralInformation() {
   }
 
   const downloadXLSFile = async () => {
-    let s_url = "http://localhost:5000/download_report?start="+start+"&end="+end+"&email="+localStorage.getItem("email")+"&sem="+sem+"&dept="+dept+"&year="+year+"&auth_token="+localStorage.getItem("token")
+    let s_url = "http://192.168.1.6:5000/download_report?start="+start+"&end="+end+"&email="+localStorage.getItem("email")+"&sem="+sem+"&dept="+dept+"&year="+year+"&auth_token="+localStorage.getItem("token")
     const headers = {'Content-Type': 'blob'};
     const config = {method: 'GET', url: s_url, responseType: 'arraybuffer', headers};
     try {
