@@ -1,5 +1,4 @@
 import React from "react";
-import GeneralInformationdata from "views/Pages/GeneralInformationdata";
 // Chakra imports
 import {
   Flex,

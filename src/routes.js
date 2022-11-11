@@ -21,7 +21,7 @@ var dashRoutes = [
     layout: "/admin",
   },
   {
-    path: "/GeneralInformation",
+    path: "/Report",
     name: "Report",
     icon: <StatsIcon color="inherit" />,
     component: GeneralInformation,

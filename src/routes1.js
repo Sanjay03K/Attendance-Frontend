@@ -4,7 +4,7 @@ import ExtraCurricularData from "views/Pages/ExtraCurricularData";
 
 var NdashRoutes = [
   {
-    path: "/ExtracurricularData",
+    path: "/Attendance",
     component: ExtraCurricularData,
     layout: "/admin",
   },

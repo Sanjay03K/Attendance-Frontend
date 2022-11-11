@@ -108,7 +108,7 @@ export default function Dashboard() {
       code,
       id 
     }).then((results) => {
-      history.push("/admin/ExtracurricularData")
+      history.push("/admin/Attendance")
     }).catch((err)=>{
       if (err.response != undefined) {
         if (err.response.data == 'marked') {
