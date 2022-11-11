@@ -121,7 +121,7 @@ export default function Dashboard() {
   }
 
   return (
-    <Flex flexDirection="column" pt={{ base: "500px", md: "75px" }}>
+    <Flex flexDirection="column" pt={{ base: "400px", md: "75px" }}>
       <Text
         mb="15px"
         ms="4px"
