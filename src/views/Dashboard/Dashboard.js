@@ -53,7 +53,7 @@ export default function Dashboard() {
     },1000)
 
     let fetchdata = () =>{
-      axios.post("http://192.168.1.6:5000/courses", {
+      axios.post("http://localhost:5000/courses", {
       email,
       auth_token,
       courses : localStorage.getItem("courses"),
@@ -102,7 +102,7 @@ export default function Dashboard() {
     var auth_token = localStorage.getItem("token")
     var code = localStorage.getItem("code")
     var id  = localStorage.getItem("id")
-    axios.post("http://192.168.1.6:5000/attendance_marked", {
+    axios.post("http://localhost:5000/attendance_marked", {
       email,
       auth_token,
       code,
