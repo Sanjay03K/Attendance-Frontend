@@ -446,7 +446,7 @@ export function SidebarResponsive(props) {
   var brand = (
     <Box pt={"35px"} mb="8px">
       <Link
-        href={`${process.env.PUBLIC_URL}/#/`}
+        // href={`${process.env.PUBLIC_URL}/#/`}
         target="_blank"
         display="flex"
         lineHeight="100%"
@@ -455,7 +455,11 @@ export function SidebarResponsive(props) {
         justifyContent="center"
         alignItems="center"
         fontSize="11px"
+        style={{'cursor':'default'}}
       >
+        <Box boxSize="50px" me="1em">
+          <Image src={signInImage} alt="LICET Logo" />
+        </Box>
         <Text fontSize="sm" mt="3px">
           {logoText}
         </Text>
