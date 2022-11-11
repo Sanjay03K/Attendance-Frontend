@@ -143,7 +143,7 @@ function Profile() {
   const [data, setData] = useState([]);
 
   return (
-    <Flex direction="column">
+    <Flex direction="column" pt={{ base: "290px", md: "75px" }}>
     <Box
       mb={{ sm: "70px" }}
       borderRadius="15px"

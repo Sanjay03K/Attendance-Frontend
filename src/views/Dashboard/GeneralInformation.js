@@ -136,7 +136,7 @@ function GeneralInformation() {
   }
 
   return (
-    <Flex direction="column" pt={{ base: "120px", md: "75px" }}>
+    <Flex direction="column" pt={{ base: "400px", md: "75px" }}>
 
       <Card mb="1rem">
         <CardBody>
