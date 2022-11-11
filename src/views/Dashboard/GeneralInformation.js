@@ -41,6 +41,10 @@ function GeneralInformation() {
   const [load, isload] = useState(false);
   const [done, isdone] = useState(false);
   const [over, isover] = useState(false);
+
+  const [start, setstart] = useState(null);
+  const [end, setend] = useState(null);
+
   const toast = useToast()
   const toastIdRef = React.useRef()
 
@@ -79,8 +83,10 @@ function GeneralInformation() {
     var auth_token = localStorage.getItem("token")
     var date = document.getElementById("date").value;
     date = date.split('-').join('/')
+    setstart(date)
     var end = document.getElementById("end").value;
     end = end.split('-').join('/')
+    setend(end)
     if(end=='' || date==''){
       toastIdRef.current = toast({ description: "Select all the fields", status: 'warning',isClosable: true })
     }
@@ -111,7 +117,7 @@ function GeneralInformation() {
   }
 
   const downloadXLSFile = async () => {
-    let s_url = "http://localhost:5000/download_report?data="+JSON.stringify(data)
+    let s_url = "http://localhost:5000/download_report?start="+start+"&end="+end+"&email="+localStorage.getItem("email")+"&sem="+sem+"&dept="+dept+"&year="+year+"&auth_token="+localStorage.getItem("token")
     const headers = {'Content-Type': 'blob'};
     const config = {method: 'GET', url: s_url, responseType: 'arraybuffer', headers};
     try {
