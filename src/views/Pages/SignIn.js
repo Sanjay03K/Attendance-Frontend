@@ -36,7 +36,6 @@ function SignIn() {
   localStorage.removeItem("email");
   localStorage.removeItem("id");
   localStorage.removeItem("courses");
-  // localStorage.clear();
   async function passcheck(){
     document.getElementById("result").innerHTML = "";
     var email = document.getElementById("email").value;

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios, { AxiosRequestConfig } from 'axios';
 // Chakra imports
 import {
@@ -35,8 +35,14 @@ function GeneralInformation() {
   const [day, setday] = useState(null);
   const [sem, setsem] = useState(null);
   const [load, isload] = useState(false);
+  const [init, isinit] = useState(null);
   const [done, isdone] = useState(false);
   const [over, isover] = useState(false);
+  const [type, istype] = useState(null);
+
+  const [under,setunder] = useState([])
+
+  const [display_dept, set_display_dept] = useState(null);
 
   const [start, setstart] = useState(null);
   const [end, setend] = useState(null);
@@ -48,11 +54,26 @@ function GeneralInformation() {
   const inputBg = useColorModeValue("white", "gray.800");
   const mainorange = useColorModeValue("orange.300", "orange.300");
 
+  useEffect(async () => {
+    var email = localStorage.getItem("email")
+    var auth_token = localStorage.getItem("token")
+
+    axios.post("http://localhost:5000/segregation",{
+      email,
+      auth_token
+    }).then((results)=>{
+      setunder(results.data.message.courses);
+      istype(results.data.message.access)
+      set_display_dept(results.data.message.dept);
+    })
+  },[])
+
   function submit() {
-    if(year==null || dept==null || sem==null || year=='' || dept=='' || sem==''){
+    if(year==null || display_dept==null || sem==null || year=='' || display_dept=='' || sem==''){
       toastIdRef.current = toast({ description: "Select all the fields", status: 'warning',isClosable: true })
     }
     else{
+      var dept = display_dept
       var email = localStorage.getItem("email")
       var auth_token = localStorage.getItem("token")
       axios.post("http://localhost:5000/report", {
@@ -83,6 +104,7 @@ function GeneralInformation() {
     var end = document.getElementById("end").value;
     end = end.split('-').join('/')
     setend(end)
+    var dept = display_dept
     if(end=='' || date==''){
       toastIdRef.current = toast({ description: "Select all the fields", status: 'warning',isClosable: true })
     }
@@ -133,129 +155,257 @@ function GeneralInformation() {
 
   return (
     <Flex direction="column" pt={{ base: "400px", md: "75px" }}>
-
-      <Card mb="1rem">
-        <CardBody>
-          <Flex flexDirection="column" align="center" justify="center" w="100%">
-            <Text fontSize="xl" color={textColor} fontWeight="bold" mr="auto">
-              View Report
-            </Text>
-          </Flex>
-        </CardBody>
-        <CardHeader mt="1em">
-          {/* <Text fontSize="lg" color={textColor} fontWeight="semi">
-            Search Student
-          </Text> */}
-        </CardHeader>
-        <SimpleGrid columns={{ sm: 1, md: 3, xl: 3 }} gap={5}>
-            <Box>
-              <CardHeader mt="1em">
-                <Text fontSize="lg" color={textColor} fontWeight="semi">
-                  Department
+      {
+        type == 1 ? (
+          <Card mb="1rem">
+            <CardBody>
+              <Flex flexDirection="column" align="center" justify="center" w="100%">
+                <Text fontSize="xl" color={textColor} fontWeight="bold" mr="auto" fontStyle={"initial"}>
+                  Report Selection
                 </Text>
-              </CardHeader>
+              </Flex>
+            </CardBody>
+            <SimpleGrid columns={{ sm: 1, md: 2, xl: 2 }} gap={5}>
+                <Box>
+                  <CardHeader mt="1em">
+                    <Button colorScheme='teal' variant='outline' style={{"width":"40em"}} onClick={()=>{isinit(1); isload(false)}}>
+                      Course Wise Report
+                    </Button>
+                  </CardHeader>
+                </Box>
+                <Box>
+                  <CardHeader mt="1em">
+                    <Button colorScheme='teal' variant='outline' style={{"width":"40em"}} onClick={()=>{isinit(0)}}>
+                      Department Report
+                    </Button>
+                  </CardHeader>
+                </Box>
+              </SimpleGrid>
+          </Card>
+        ) : (
+          <>
+            <Card mb="1rem">
+                <CardBody>
+                  <Flex flexDirection="column" align="center" justify="center" w="100%">
+                    <Text fontSize="xl" color={textColor} fontWeight="bold" mr="auto">
+                      View Report
+                    </Text>
+                  </Flex>
+                </CardBody>
+                <SimpleGrid columns={{ sm: 1, md: 1, xl: 1 }} gap={5}>
+                    <Box>
+                      <CardHeader mt="1em">
+                        <Text fontSize="lg" color={textColor} fontWeight="semi">
+                          Year
+                        </Text>
+                      </CardHeader>
+        
+                      <InputGroup
+                        bg={inputBg}
+                        mt="1rem"
+                        borderRadius="15px"
+                        w="cover"
+                        _focus={{
+                          borderColor: { mainorange },
+                        }}
+                        _active={{
+                          borderColor: { mainorange },
+                        }}
+                      >
+                        <Select placeholder='Select Year' onChange={(e)=>{
+                          setyear(e.target.value)
+                        }}>
+                          <option value='1'>1</option>
+                          <option value='2'>2</option>
+                          <option value='3'>3</option>
+                          <option value='4'>4</option>
+                        </Select>
+                      </InputGroup>
+                    </Box>
+                </SimpleGrid>     
+              </Card>
+          </>
+        )
+      }
 
-              <InputGroup
-                bg={inputBg}
-                mt="1rem"
-                borderRadius="15px"
-                w="cover"
-                _focus={{
-                  borderColor: { mainorange },
-                }}
-                _active={{
-                  borderColor: { mainorange },
-                }}
-              >
-                <Select placeholder='Select Department' onChange={(e)=>{
-                  setdept(e.target.value)
-                }}>
-                  <option value='MECH'>MECH</option>
-                  <option value='CSE'>CSE</option>
-                  <option value='ECE'>ECE</option>
-                  <option value='EEE'>EEE</option>
-                  <option value='IT'>IT</option>
-                </Select>
-              </InputGroup>
-            </Box>
-
-            <Box>
-              <CardHeader mt="1em">
-                <Text fontSize="lg" color={textColor} fontWeight="semi">
-                  Year
-                </Text>
-              </CardHeader>
-
-              <InputGroup
-                bg={inputBg}
-                mt="1rem"
-                borderRadius="15px"
-                w="cover"
-                _focus={{
-                  borderColor: { mainorange },
-                }}
-                _active={{
-                  borderColor: { mainorange },
-                }}
-              >
-                <Select placeholder='Select Year' onChange={(e)=>{
-                  setyear(e.target.value)
-                }}>
-                  <option value='1'>1</option>
-                  <option value='2'>2</option>
-                  <option value='3'>3</option>
-                  <option value='4'>4</option>
-                </Select>
-              </InputGroup>
-            </Box>
-
-            <Box>
-              <CardHeader mt="1em">
-                <Text fontSize="lg" color={textColor} fontWeight="semi">
-                  Semester
-                </Text>
-              </CardHeader>
-              <InputGroup
-                bg={inputBg}
-                mt="1rem"
-                borderRadius="15px"
-                w="cover"
-                _focus={{
-                  borderColor: { mainorange },
-                }}
-                _active={{
-                  borderColor: { mainorange },
-                }}
-              >
-               <Select placeholder='Select Semester' onChange={(e)=>{
-                  setsem(e.target.value)
-                }}>
-                  <option value='1'>1</option>
-                  <option value='2'>2</option>
-                  <option value='3'>3</option>
-                  <option value='4'>4</option>
-                  <option value='5'>5</option>
-                  <option value='6'>6</option>
-                  <option value='7'>7</option>
-                  <option value='8'>8</option>
-                </Select>
-              </InputGroup>
-            </Box>
-          </SimpleGrid>
-
-        <Button
-          mt="1em"
-          onClick={()=>{
-            submit()
-          }}
-          colorScheme="orange"
-          alignSelf="flex-end"
-          variant="solid"
-          width="25%"
-        >
-          Submit
-        </Button>
-      </Card>
+      { init == 0 ? (
+                <Card mb="1rem">
+                <CardBody>
+                  <Flex flexDirection="column" align="center" justify="center" w="100%">
+                    <Text fontSize="xl" color={textColor} fontWeight="bold" mr="auto">
+                      View Report
+                    </Text>
+                  </Flex>
+                </CardBody>
+                <SimpleGrid columns={{ sm: 1, md: 3, xl: 3 }} gap={5}>
+                    <Box>
+                      <CardHeader mt="1em">
+                        <Text fontSize="lg" color={textColor} fontWeight="semi">
+                          Department
+                        </Text>
+                      </CardHeader>
+                      <InputGroup
+                        bg={inputBg}
+                        mt="1rem"
+                        borderRadius="15px"
+                        w="cover"
+                        _focus={{
+                          borderColor: { mainorange },
+                        }}
+                        _active={{
+                          borderColor: { mainorange },
+                        }}
+                      >
+                        <Select placeholder={display_dept} onChange={(e)=>{
+                          setdept(e.target.value)
+                        }}>
+                        </Select>
+                      </InputGroup>
+                    </Box>
+        
+                    <Box>
+                      <CardHeader mt="1em">
+                        <Text fontSize="lg" color={textColor} fontWeight="semi">
+                          Year
+                        </Text>
+                      </CardHeader>
+        
+                      <InputGroup
+                        bg={inputBg}
+                        mt="1rem"
+                        borderRadius="15px"
+                        w="cover"
+                        _focus={{
+                          borderColor: { mainorange },
+                        }}
+                        _active={{
+                          borderColor: { mainorange },
+                        }}
+                      >
+                        <Select placeholder='Select Year' onChange={(e)=>{
+                          setyear(e.target.value)
+                        }}>
+                          <option value='1'>1</option>
+                          <option value='2'>2</option>
+                          <option value='3'>3</option>
+                          <option value='4'>4</option>
+                        </Select>
+                      </InputGroup>
+                    </Box>
+        
+                    <Box>
+                      <CardHeader mt="1em">
+                        <Text fontSize="lg" color={textColor} fontWeight="semi">
+                          Semester
+                        </Text>
+                      </CardHeader>
+                      <InputGroup
+                        bg={inputBg}
+                        mt="1rem"
+                        borderRadius="15px"
+                        w="cover"
+                        _focus={{
+                          borderColor: { mainorange },
+                        }}
+                        _active={{
+                          borderColor: { mainorange },
+                        }}
+                      >
+                       <Select placeholder='Select Semester' onChange={(e)=>{
+                          setsem(e.target.value)
+                        }}>{
+                          year == 1 ? (
+                            <>
+                              <option value='1'>1</option>
+                              <option value='2'>2</option>
+                            </>
+                          ) : year == 2 ? (
+                            <>
+                              <option value='3'>3</option>
+                              <option value='4'>4</option>
+                            </>
+                          ) : year == 3 ?
+                          (
+                            <>
+                              <option value='5'>5</option>
+                              <option value='6'>6</option>
+                            </>
+                          ) : year == 4 ? (
+                            <>
+                              <option value='7'>7</option>
+                              <option value='8'>8</option>
+                            </>
+                          ) : (
+                            <></>
+                          )
+                        }
+                        </Select>
+                      </InputGroup>
+                    </Box>
+                  </SimpleGrid>
+        
+                <Button
+                  mt="1em"
+                  onClick={()=>{
+                    submit()
+                  }}
+                  colorScheme="orange"
+                  alignSelf="flex-end"
+                  variant="solid"
+                  width="25%"
+                >
+                  Submit
+                </Button>
+              </Card>
+        ) : init == 1 ? ( 
+          <>
+            <Card mb="1rem">
+                <CardBody>
+                  <Flex flexDirection="column" align="center" justify="center" w="100%">
+                    <Text fontSize="xl" color={textColor} fontWeight="bold" mr="auto">
+                      View Report
+                    </Text>
+                  </Flex>
+                </CardBody>
+                <SimpleGrid columns={{ sm: 1, md: 1, xl: 1 }} gap={5}>
+                    <Box>
+                      <CardHeader mt="1em">
+                        <Text fontSize="lg" color={textColor} fontWeight="semi">
+                          Course List
+                        </Text>
+                      </CardHeader>
+        
+                      <InputGroup
+                        bg={inputBg}
+                        mt="1rem"
+                        borderRadius="15px"
+                        w="cover"
+                        _focus={{
+                          borderColor: { mainorange },
+                        }}
+                        _active={{
+                          borderColor: { mainorange },
+                        }}
+                      >
+                        <Select placeholder='Select course' onChange={(e)=>{
+                          setyear(e.target.value)
+                        }}>{under.length > 0 ? (
+                          under.map((item) => (
+                            <>
+                              <option value={item.sub}>{item.sub}</option>
+                            </>
+                          ))
+                        ) : (<></>) }
+                        </Select>
+                      </InputGroup>
+                    </Box>
+                </SimpleGrid>     
+              </Card>
+          </> 
+        ) : (
+          <></>
+        )
+      }
 
     {load ? (
        <Card overflowX={{ sm: "scroll", xl: "hidden" }}>
