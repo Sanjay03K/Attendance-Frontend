@@ -1,7 +1,5 @@
 import React, { useState } from "react";
 import axios, { AxiosRequestConfig } from 'axios';
-import fs from 'fs';
-
 // Chakra imports
 import {
   Flex,
@@ -26,10 +24,8 @@ import CardHeader from "components/Card/CardHeader.js";
 import CardBody from "components/Card/CardBody.js";
 import { Select } from '@chakra-ui/react'
 import { useToast } from '@chakra-ui/react'
-import * as FileSaver from 'file-saver';
-import * as XLSX from 'xlsx';
 
-function GeneralInformation() {
+function GeneralInformation() {  
   const [data, setData] = useState([]);
   const [dayData, setdayData] = useState({});
   const [count, setCount] = useState(0);
