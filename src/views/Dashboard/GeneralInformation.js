@@ -42,7 +42,16 @@ function GeneralInformation() {
 
   const [under,setunder] = useState([])
 
+  const [i_data, set_i_data] = useState([]);
   const [i_course, set_i_course] = useState(null);
+  const [i_dept, set_i_dept] = useState(null);
+  const [i_year, set_i_year] = useState(null);
+  const [i_sem, set_i_sem] = useState(null);
+  const [i_load, is_i_load] = useState(false);
+  const [i_start, set_i_start] = useState(null);
+  const [i_end, set_i_end] = useState(null);
+  const [i_over, is_i_over] = useState(false);
+
 
   const [display_dept, set_display_dept] = useState(null);
 
@@ -64,9 +73,9 @@ function GeneralInformation() {
       email,
       auth_token
     }).then((results)=>{
-      setunder(results.data.message.courses);
-      istype(results.data.message.access)
-      set_display_dept(results.data.message.dept);
+      setunder(results.data.courses);
+      istype(results.data.access)
+      set_display_dept(results.data.dept);
     })
   },[])
 
@@ -124,7 +133,6 @@ function GeneralInformation() {
           toastIdRef.current = toast({ description: "No report found", status: 'info',isClosable: true })
         }
         else{
-          localStorage.setItem("data",results.data)
           setData(results.data)
           isload(false)
         }
@@ -136,13 +144,75 @@ function GeneralInformation() {
     }
   }
 
+  function i_final() {
+    var email = localStorage.getItem("email")
+    var auth_token = localStorage.getItem("token")
+    var start = document.getElementById("i_start").value;
+    start = start.split('-').join('/')
+    set_i_start(start)
+    var end = document.getElementById("i_end").value;
+    end = end.split('-').join('/')
+    set_i_end(end)
+    var course = i_course;
+    var dept = i_dept;
+    var sem = i_sem;
+    var year = i_year;
+    if(end=='' || start==''){
+      toastIdRef.current = toast({ description: "Select all the fields", status: 'warning',isClosable: true })
+    }
+    else{
+      axios.post("http://localhost:5000/individual",{
+        email,
+        auth_token,
+        start,
+        end,
+        course,
+        dept,
+        sem,
+        year,
+      }).then((results)=>{
+        if(results.data.length == 0){
+          toastIdRef.current = toast({ description: "No report found", status: 'info',isClosable: true })
+        }
+        else{
+          set_i_data(results.data);
+          is_i_load(false);
+        }
+      }).catch((err)=>{
+        if (err.response.data!=undefined) {
+          toastIdRef.current = toast({ description: err.response.data, status: 'error',isClosable: true })
+        }
+      })
+    }
+  }
+
   const downloadXLSFile = async () => {
+    var dept = display_dept;
     let s_url = "http://localhost:5000/download_report?start="+start+"&end="+end+"&email="+localStorage.getItem("email")+"&sem="+sem+"&dept="+dept+"&year="+year+"&auth_token="+localStorage.getItem("token")
     const headers = {'Content-Type': 'blob'};
     const config = {method: 'GET', url: s_url, responseType: 'arraybuffer', headers};
     try {
         const response = await axios(config);        
         const outputFilename = dept+"_"+year+"_"+sem+"-"+Date.now()+".xlsx";
+        const url = URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', outputFilename);
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+    } catch (error) {
+        throw Error(error);
+    }
+  }
+
+  const i_downloadXLSFile = async () => {
+    let s_url = "http://localhost:5000/download_indiv?start="+i_start+"&end="+i_end+"&email="+localStorage.getItem("email")+"&sem="+i_sem+"&dept="+i_dept+"&year="+i_year+"&auth_token="+localStorage.getItem("token")+"&course="+i_course;
+    const headers = {'Content-Type': 'blob'};
+    const config = {method: 'GET', url: s_url, responseType: 'arraybuffer', headers};
+    try {
+        const response = await axios(config);        
+        const outputFilename = i_course+"_"+i_dept+"_"+i_year+"_"+i_sem+"-"+Date.now()+".xlsx";
         const url = URL.createObjectURL(new Blob([response.data]));
         const link = document.createElement('a');
         link.href = url;
@@ -170,14 +240,14 @@ function GeneralInformation() {
             <SimpleGrid columns={{ sm: 1, md: 2, xl: 2 }} gap={5}>
                 <Box>
                   <CardHeader mt="1em">
-                    <Button colorScheme='teal' variant='outline' style={{"width":"40em"}} onClick={()=>{isinit(1); isload(false); isover(false); isdone(false); setData([]); }}>
+                    <Button colorScheme='teal' variant='outline' style={{"width":"40em"}} onClick={()=>{isinit(1); isload(false); isover(false); isdone(false); setData([]); set_i_data([]); setcourse(null); }}>
                       Course Wise Report
                     </Button>
                   </CardHeader>
                 </Box>
                 <Box>
                   <CardHeader mt="1em">
-                    <Button colorScheme='teal' variant='outline' style={{"width":"40em"}} onClick={()=>{isinit(0); setsem(null); setyear(null); }}>
+                    <Button colorScheme='teal' variant='outline' style={{"width":"40em"}} onClick={()=>{isover(false); isinit(0); setsem(null); setyear(null); is_i_load(false); set_i_data([]); setcourse(null); }}>
                       Department Report
                     </Button>
                   </CardHeader>
@@ -190,7 +260,7 @@ function GeneralInformation() {
                 <CardBody>
                   <Flex flexDirection="column" align="center" justify="center" w="100%">
                     <Text fontSize="xl" color={textColor} fontWeight="bold" mr="auto">
-                      View Report
+                      Course Report
                     </Text>
                   </Flex>
                 </CardBody>
@@ -215,11 +285,25 @@ function GeneralInformation() {
                         }}
                       >
                         <Select placeholder='Select course' onChange={(e)=>{
-                          setyear(e.target.value)
+                          if (e.target.value == '') {
+                            toastIdRef.current = toast({ description: "Course not selected", status: 'info',isClosable: true })
+                            is_i_load(false)
+                            set_i_data([])
+                            isover(false)
+                          }
+                          else{
+                            set_i_course(e.target.value.split('.')[0])
+                            set_i_dept(e.target.value.split('.')[1])
+                            set_i_year(e.target.value.split('.')[2])
+                            set_i_sem(e.target.value.split('.')[3])  
+                            is_i_load(true)
+                            set_i_data([])
+                            isover(false)
+                          }
                         }}>{under.length > 0 ? (
                           under.map((item) => (
                             <>
-                              <option value={item.sub}>{item.sub}</option>
+                              <option value={item.sub+'.'+item.Dept+'.'+item.year+'.'+item.sem}>{item.name}{' - '}{item.sub}{' - '}{'('+item.Dept+')'}</option>
                             </>
                           ))
                         ) : (<></>) }
@@ -237,7 +321,7 @@ function GeneralInformation() {
                 <CardBody>
                   <Flex flexDirection="column" align="center" justify="center" w="100%">
                     <Text fontSize="xl" color={textColor} fontWeight="bold" mr="auto">
-                      View Report
+                    Department Report
                     </Text>
                   </Flex>
                 </CardBody>
@@ -367,7 +451,7 @@ function GeneralInformation() {
                 <CardBody>
                   <Flex flexDirection="column" align="center" justify="center" w="100%">
                     <Text fontSize="xl" color={textColor} fontWeight="bold" mr="auto">
-                      View Report
+                      Course Report
                     </Text>
                   </Flex>
                 </CardBody>
@@ -392,11 +476,25 @@ function GeneralInformation() {
                         }}
                       >
                         <Select placeholder='Select course' onChange={(e)=>{
-                          set_i_course(e.target.value.split('.')[0])
+                          if (e.target.value == '') {
+                            toastIdRef.current = toast({ description: "Course not selected", status: 'info',isClosable: true })
+                            is_i_load(false)
+                            set_i_data([])
+                            isover(false)
+                          }
+                          else{
+                            set_i_course(e.target.value.split('.')[0])
+                            set_i_dept(e.target.value.split('.')[1])
+                            set_i_year(e.target.value.split('.')[2])
+                            set_i_sem(e.target.value.split('.')[3])  
+                            is_i_load(true)
+                            set_i_data([])
+                            isover(false)
+                          }
                         }}>{under.length > 0 ? (
                           under.map((item) => (
                             <>
-                              <option value={item.sub+'.'+item.Dept}>{item.sub}{' - '}{'('+item.Dept+')'}</option>
+                              <option value={item.sub+'.'+item.Dept+'.'+item.year+'.'+item.sem}>{item.name}{' - '}{item.sub}{' - '}{'('+item.Dept+')'}</option>
                             </>
                           ))
                         ) : (<></>) }
@@ -410,6 +508,141 @@ function GeneralInformation() {
           <></>
         )
       }
+
+    {
+      i_load ? (
+        <Card overflowX={{ sm: "scroll", xl: "hidden" }}>
+        <SimpleGrid columns={{ sm: 1, md: 2, xl: 2 }} gap={5}>
+           <Box>
+                 <CardHeader mt="1em">
+                   <Text fontSize="lg" color={textColor} fontWeight="semi">
+                     Start Date
+                   </Text>
+                 </CardHeader>
+ 
+                 <InputGroup
+                   bg={inputBg}
+                   mt="1rem"
+                   borderRadius="15px"
+                   w="cover"
+                   _focus={{
+                     borderColor: { mainorange },
+                   }}
+                   _active={{
+                     borderColor: { mainorange },
+                   }}
+                 >
+                   <Input
+                     placeholder="Select Date and Time"
+                     size="md"
+                     type="date"
+                     id="i_start"
+                   />
+                 </InputGroup>
+           </Box>
+           <Box>
+                 <CardHeader mt="1em">
+                   <Text fontSize="lg" color={textColor} fontWeight="semi">
+                     End Date
+                   </Text>
+                 </CardHeader>
+ 
+                 <InputGroup
+                   bg={inputBg}
+                   mt="1rem"
+                   borderRadius="15px"
+                   w="cover"
+                   _focus={{
+                     borderColor: { mainorange },
+                   }}
+                   _active={{
+                     borderColor: { mainorange },
+                   }}
+                 >
+                   <Input
+                     placeholder="Select Date and Time"
+                     size="md"
+                     type="date"
+                     id="i_end"
+                   />
+                 </InputGroup>
+           </Box>
+        </SimpleGrid>
+        <Button
+           mt="1em"
+           onClick={()=>{
+             i_final()
+           }}
+           colorScheme="orange"
+           alignSelf="flex-end"
+           variant="solid"
+           width="25%"
+         >
+           Submit  
+         </Button>
+      </Card>
+      ) : (
+        <>
+        {
+          i_data.length > 0 ? (
+          <Card overflowX={{ sm: "scroll", xl: "hidden" }}>          
+            <CardHeader mt="1em">
+                <Text fontSize="lg" color={textColor} fontWeight="semi">
+                  Select Date
+                </Text>
+              </CardHeader>
+              <InputGroup
+                bg={inputBg}
+                mt="1rem"
+                borderRadius="15px"
+                w="cover"
+                _focus={{
+                  borderColor: { mainorange },
+                }}
+                _active={{
+                  borderColor: { mainorange },
+                }}
+              >
+                <Select placeholder='Choose...' onChange={(e)=>{
+                  if(e.target.value == ''){
+                    isover(false)
+                    setcourse(null)
+                  }
+                  else{
+                    isover(false)
+                      for (let i = 0; i < i_data.length; i++) {
+                        if(i_data[i].day == e.target.value){
+                            setcourse(JSON.parse(i_data[i][i_course])[0])
+                            isover(true)
+                            break;
+                        }
+                      }
+                    }
+                  }}>
+                  {i_data.map((item) => (
+                    <option value={item.day}>{item.day}</option>
+                  ))}
+                </Select>
+              </InputGroup>
+              <Button
+                mt="1em"
+                onClick={()=>{
+                  i_downloadXLSFile()
+                }}
+                colorScheme="blue"
+                alignSelf="flex-end"
+                variant="solid"
+                width="25%"
+              >
+                Download Report  
+            </Button>
+          </Card>
+      ) : (
+        <></>
+      )}
+        </>
+      )
+    }
 
     {load ? (
        <Card overflowX={{ sm: "scroll", xl: "hidden" }}>
@@ -520,6 +753,9 @@ function GeneralInformation() {
                   }
                   setday(e.target.value)
                   isdone(true)
+                  if (document.getElementById("cour") != null) {
+                    document.getElementById("cour").options.selectedIndex = 0;
+                  }
                 }
               }}>
               {data.map((item) => (
@@ -568,7 +804,7 @@ function GeneralInformation() {
                   borderColor: { mainorange },
                 }}
               >
-                <Select placeholder='Choose...' onChange={(e)=>{
+                <Select id="cour" placeholder='Choose...' onChange={(e)=>{
                   if (dayData[e.target.value] == null && e.target.value != ''){
                     isover(false)
                     toastIdRef.current = toast({ description: "No report found", status: 'info',isClosable: true })
@@ -576,6 +812,9 @@ function GeneralInformation() {
                   else if(e.target.value != ''){
                     setcourse(JSON.parse(dayData[e.target.value])[0]);
                     isover(true)
+                  }
+                  else{
+                    isover(false)
                   }
                 }}>
                   {
