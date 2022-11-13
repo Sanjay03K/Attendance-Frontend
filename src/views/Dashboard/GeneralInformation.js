@@ -42,6 +42,8 @@ function GeneralInformation() {
 
   const [under,setunder] = useState([])
 
+  const [i_course, set_i_course] = useState(null);
+
   const [display_dept, set_display_dept] = useState(null);
 
   const [start, setstart] = useState(null);
@@ -168,14 +170,14 @@ function GeneralInformation() {
             <SimpleGrid columns={{ sm: 1, md: 2, xl: 2 }} gap={5}>
                 <Box>
                   <CardHeader mt="1em">
-                    <Button colorScheme='teal' variant='outline' style={{"width":"40em"}} onClick={()=>{isinit(1); isload(false)}}>
+                    <Button colorScheme='teal' variant='outline' style={{"width":"40em"}} onClick={()=>{isinit(1); isload(false); isover(false); isdone(false); setData([]); }}>
                       Course Wise Report
                     </Button>
                   </CardHeader>
                 </Box>
                 <Box>
                   <CardHeader mt="1em">
-                    <Button colorScheme='teal' variant='outline' style={{"width":"40em"}} onClick={()=>{isinit(0)}}>
+                    <Button colorScheme='teal' variant='outline' style={{"width":"40em"}} onClick={()=>{isinit(0); setsem(null); setyear(null); }}>
                       Department Report
                     </Button>
                   </CardHeader>
@@ -196,7 +198,7 @@ function GeneralInformation() {
                     <Box>
                       <CardHeader mt="1em">
                         <Text fontSize="lg" color={textColor} fontWeight="semi">
-                          Year
+                          Course List
                         </Text>
                       </CardHeader>
         
@@ -212,13 +214,15 @@ function GeneralInformation() {
                           borderColor: { mainorange },
                         }}
                       >
-                        <Select placeholder='Select Year' onChange={(e)=>{
+                        <Select placeholder='Select course' onChange={(e)=>{
                           setyear(e.target.value)
-                        }}>
-                          <option value='1'>1</option>
-                          <option value='2'>2</option>
-                          <option value='3'>3</option>
-                          <option value='4'>4</option>
+                        }}>{under.length > 0 ? (
+                          under.map((item) => (
+                            <>
+                              <option value={item.sub}>{item.sub}</option>
+                            </>
+                          ))
+                        ) : (<></>) }
                         </Select>
                       </InputGroup>
                     </Box>
@@ -388,11 +392,11 @@ function GeneralInformation() {
                         }}
                       >
                         <Select placeholder='Select course' onChange={(e)=>{
-                          setyear(e.target.value)
+                          set_i_course(e.target.value.split('.')[0])
                         }}>{under.length > 0 ? (
                           under.map((item) => (
                             <>
-                              <option value={item.sub}>{item.sub}</option>
+                              <option value={item.sub+'.'+item.Dept}>{item.sub}{' - '}{'('+item.Dept+')'}</option>
                             </>
                           ))
                         ) : (<></>) }
