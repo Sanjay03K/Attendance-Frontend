@@ -16,6 +16,19 @@ import {
   RadioGroup,
   Stack,
   Radio,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  ModalCloseButton,
+  useDisclosure,
+  List,
+  ListItem,
+  ListIcon,
+  OrderedList,
+  UnorderedList,
 } from "@chakra-ui/react";
 // Custom components
 import Card from "components/Card/Card.js";
@@ -28,6 +41,9 @@ function ExtraCurricularData() {
   const toast = useToast()
   const toastIdRef = React.useRef()
   const history = useHistory();
+
+  const [absent, setabsent] = useState(0);
+  const { isOpen, onOpen, onClose } = useDisclosure()
 
   function submit() {
     setload(true)
@@ -76,6 +92,7 @@ function ExtraCurricularData() {
 
   const [data, setdata] = useState([])
   const [present, setpresent] = useState({})
+  const [names, setnames] = useState([])
   const [load, setload] = useState(false)
 
   useEffect(async () => {
@@ -97,7 +114,7 @@ function ExtraCurricularData() {
       code
     }).then((items) => {
       for (let i = 0; i < items.data.length; i++) {
-        present[items.data[i].register_no] = 1        
+        present[items.data[i].register_no] = 1 
       }
       setdata(items.data);
     }).catch((err)=>{
@@ -113,6 +130,44 @@ function ExtraCurricularData() {
   return (
     <>
     <Flex direction="column" pt={{ base: "400px", md: "75px" }}>
+      <Modal isOpen={isOpen} onClose={onClose}>
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>Review</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody>
+            <Text fontSize="l" color={textColor} fontStyle={"initial"}>
+              Number of Students Present : {Object.keys(present).length - absent}
+            </Text><br/>
+            <Text fontSize="l" color={textColor} fontStyle={"initial"}>
+              Number of Students Absent&nbsp;&nbsp;: {absent}
+            </Text><br/>
+            {names.length > 0 ? (<>
+            <Button colorScheme='teal' variant='outline' style={{"cursor":"default"}}>
+            List of Absentees
+            </Button><br/><br/></> 
+            ):(
+              <></>
+            )}
+            <UnorderedList>
+            {names.length > 0 ? (
+              names.map((item) => (
+              <>
+                <ListItem>{item}</ListItem>
+              </>
+            )) 
+              ) : (
+              <></>
+            )}      
+            </UnorderedList>
+            </ModalBody>
+            <ModalFooter>
+              <Button colorScheme='blue' mr={3} isLoading = {load} onClick={()=>{submit()}}>
+                Submit
+              </Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
       <Grid columns={{ sm: 1, md: 2, xl: 2 }} gap={4}>
         <GridItem>
           <Card overflowX={{ sm: "scroll", xl: "hidden" }}>
@@ -166,10 +221,23 @@ function ExtraCurricularData() {
           alignSelf="flex-end"
           variant="solid"
           width="10%"
-          onClick={()=>{submit()}}
-          isLoading = {load}
-        >
-          Submit
+          onClick={()=>{
+            let absent = 0;
+            let new_arr = [];
+            for(const key in present){
+              if(present[key] == 0){
+                absent +=1
+                for (let i = 0; i < data.length; i++) {
+                  if (data[i].register_no == key) {
+                    new_arr.push(data[i].name)
+                  }
+                }
+              }
+            } 
+            setnames(new_arr)
+            setabsent(absent)
+            onOpen()}}>
+          Proceed
         </Button>
       </Grid>
     </Flex>
