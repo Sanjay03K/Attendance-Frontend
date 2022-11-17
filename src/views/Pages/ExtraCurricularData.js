@@ -65,7 +65,7 @@ function ExtraCurricularData() {
       code,
       id
     }).then(()=>{
-      axios.post("http://localhost:5000/attendance",{
+      axios.post("http://localhost:5000/mobile",{
         email,
         auth_token,
         data,
