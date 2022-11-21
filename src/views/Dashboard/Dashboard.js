@@ -56,7 +56,6 @@ export default function Dashboard() {
       axios.post("http://localhost:5000/courses", {
       email,
       auth_token,
-      courses : localStorage.getItem("courses"),
       id 
       }).then((items) => {
         var today = new Date();

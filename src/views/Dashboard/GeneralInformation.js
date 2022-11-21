@@ -303,7 +303,7 @@ function GeneralInformation() {
                         }}>{under.length > 0 ? (
                           under.map((item) => (
                             <>
-                              <option value={item.sub+'.'+item.Dept+'.'+item.year+'.'+item.sem}>{item.name}{' - '}{item.sub}{' - '}{'('+item.Dept+')'}</option>
+                              <option value={item.sub+'.'+item.dept+'.'+item.year+'.'+item.sem}>{item.name}{' - '}{item.sub}{' - '}{'('+item.dept+')'}</option>
                             </>
                           ))
                         ) : (<></>) }
@@ -494,7 +494,7 @@ function GeneralInformation() {
                         }}>{under.length > 0 ? (
                           under.map((item) => (
                             <>
-                              <option value={item.sub+'.'+item.Dept+'.'+item.year+'.'+item.sem}>{item.name}{' - '}{item.sub}{' - '}{'('+item.Dept+')'}</option>
+                              <option value={item.sub+'.'+item.dept+'.'+item.year+'.'+item.sem}>{item.name}{' - '}{item.sub}{' - '}{'('+item.dept+')'}</option>
                             </>
                           ))
                         ) : (<></>) }

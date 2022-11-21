@@ -54,7 +54,6 @@ function SignIn() {
         localStorage.setItem("email", res.data.email);
         localStorage.setItem("name", res.data.name);
         localStorage.setItem("id", res.data.id);
-        localStorage.setItem("courses", res.data.courses);
         history.push("/admin/dashboard")
       } catch (err) {
           if (res == null && err.response == undefined) {
