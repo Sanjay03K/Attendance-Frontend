@@ -27,8 +27,6 @@ import { useToast } from '@chakra-ui/react'
 
 function GeneralInformation() {  
   const [data, setData] = useState([]);
-  const [dayData, setdayData] = useState({});
-  const [count, setCount] = useState(0);
   const [dept, setdept] = useState(null);
   const [course, setcourse] = useState(null);
   const [year, setyear] = useState(null);
@@ -40,6 +38,10 @@ function GeneralInformation() {
   const [over, isover] = useState(false);
   const [type, istype] = useState(null);
 
+  const [final_course, set_final_course] = useState(null);
+  const [final_display, set_final_display] = useState([]);
+  const [final_attended, set_final_attended] = useState([]);
+
   const [under,setunder] = useState([])
 
   const [i_data, set_i_data] = useState([]);
@@ -50,8 +52,6 @@ function GeneralInformation() {
   const [i_load, is_i_load] = useState(false);
   const [i_start, set_i_start] = useState(null);
   const [i_end, set_i_end] = useState(null);
-  const [i_over, is_i_over] = useState(false);
-
 
   const [display_dept, set_display_dept] = useState(null);
 
@@ -97,6 +97,7 @@ function GeneralInformation() {
           isload(true)
         }
         else{
+          isload(false)
           toastIdRef.current = toast({ description: "No report found", status: 'info',isClosable: true })
         }
       }).catch(()=>{
@@ -148,6 +149,7 @@ function GeneralInformation() {
   function get_courses(day) {
     var email = localStorage.getItem("email")
     var auth_token = localStorage.getItem("token")
+    var dept = display_dept
     axios.post("http://localhost:5000/get_courses",{
       email,
       auth_token,
@@ -157,7 +159,9 @@ function GeneralInformation() {
       dept,
       sem
     }).then((results)=>{
-      console.log(results);
+      set_final_display(results.data)
+      set_final_course(results.data[0]);
+      isdone(true)
     })
   }
 
@@ -452,6 +456,9 @@ function GeneralInformation() {
                 <Button
                   mt="1em"
                   onClick={()=>{
+                    setData([])
+                    isdone(false)
+                    isover(false)
                     submit()
                   }}
                   colorScheme="orange"
@@ -629,9 +636,9 @@ function GeneralInformation() {
                     isover(false)
                       for (let i = 0; i < i_data.length; i++) {
                         if(i_data[i].day == e.target.value){
-                            setcourse(JSON.parse(i_data[i][i_course])[0])
-                            isover(true)
-                            break;
+                          setcourse(JSON.parse(i_data[i][i_course])[0])
+                          isover(true)
+                          break;
                         }
                       }
                     }
@@ -756,32 +763,18 @@ function GeneralInformation() {
           >
             <Select placeholder='Choose...' onChange={(e)=>{
               if(e.target.value == ''){
-                // isdone(false)
+                isdone(false)
                 setday(null)
-                // isover(false)
+                isover(false)
               }
               else{
+                isover(false)
+                setday(e.target.value)
                 get_courses(e.target.value)  
+                if (document.getElementById("cour") != null) {
+                  document.getElementById("cour").options.selectedIndex = 0;
+                }
               }
-              // if(e.target.value == ''){
-              //   isdone(false)
-              //   setcourse(null)
-              //   isover(false)
-              // }
-              // else{
-              //   setcourse(null)
-              //   isover(false)
-              //     for (let i = 0; i < data.length; i++) {
-              //       if(data[i].day == e.target.value){
-              //         setdayData(data[i])
-              //       }
-              //     }
-              //     setday(e.target.value)
-              //     isdone(true)
-              //     if (document.getElementById("cour") != null) {
-              //       document.getElementById("cour").options.selectedIndex = 0;
-              //     }
-              //   }
               }}>
               {data.map((item) => (
                 <option value={item}>{item}</option>
@@ -830,12 +823,8 @@ function GeneralInformation() {
                 }}
               >
                 <Select id="cour" placeholder='Choose...' onChange={(e)=>{
-                  if (dayData[e.target.value] == null && e.target.value != ''){
-                    isover(false)
-                    toastIdRef.current = toast({ description: "No report found", status: 'info',isClosable: true })
-                  }
-                  else if(e.target.value != ''){
-                    setcourse(JSON.parse(dayData[e.target.value])[0]);
+                  if(e.target.value != '' ){
+                    set_final_attended(e.target.value)
                     isover(true)
                   }
                   else{
@@ -843,9 +832,9 @@ function GeneralInformation() {
                   }
                 }}>
                   {
-                  Object.keys(dayData)
+                  Object.keys(final_course)
                   .filter((key) => {
-                    if(key != 'day'){
+                    if(key != 'register_no' && key!='day' && key!='undefined' && key!=''){
                        return key 
                     }
                   })
@@ -880,12 +869,12 @@ function GeneralInformation() {
                   </Tr>
                 </Thead>
                 <Tbody>
-                {Object.keys(course).length > 0 ? (
-                        Object.keys(course).map((key,i) => (
+                {final_display.length > 0 ? (
+                        final_display.map((item) => (
                             <>
                               <Tr color="white.100">
-                                <Th color="white.100">{key}</Th>
-                                <Th color="white.100">{course[key]}</Th>
+                                <Th color="white.100">{item.register_no}</Th>
+                                <Th color="white.100">{item[final_attended]}</Th>
                               </Tr>
                             </>
                         )) 
