@@ -68,7 +68,6 @@ function GeneralInformation() {
   useEffect(async () => {
     var email = localStorage.getItem("email")
     var auth_token = localStorage.getItem("token")
-
     axios.post("http://localhost:5000/segregation",{
       email,
       auth_token
@@ -94,7 +93,7 @@ function GeneralInformation() {
         dept,
         sem
       }).then((results)=>{
-        if(results.data.length > 0){
+        if(results.data.count > 0){
           isload(true)
         }
         else{
@@ -133,7 +132,9 @@ function GeneralInformation() {
           toastIdRef.current = toast({ description: "No report found", status: 'info',isClosable: true })
         }
         else{
-          setData(results.data)
+          let lst = new Set(results.data.map((d)=>{return d.day}))
+          lst = [...lst];
+          setData(lst)
           isload(false)
         }
       }).catch((err)=>{
@@ -142,6 +143,22 @@ function GeneralInformation() {
         }
       })
     }
+  }
+
+  function get_courses(day) {
+    var email = localStorage.getItem("email")
+    var auth_token = localStorage.getItem("token")
+    axios.post("http://localhost:5000/get_courses",{
+      email,
+      auth_token,
+      day,
+      end,
+      year,
+      dept,
+      sem
+    }).then((results)=>{
+      console.log(results);
+    })
   }
 
   function i_final() {
@@ -739,27 +756,35 @@ function GeneralInformation() {
           >
             <Select placeholder='Choose...' onChange={(e)=>{
               if(e.target.value == ''){
-                isdone(false)
-                setcourse(null)
-                isover(false)
+                // isdone(false)
+                setday(null)
+                // isover(false)
               }
               else{
-                setcourse(null)
-                isover(false)
-                  for (let i = 0; i < data.length; i++) {
-                    if(data[i].day == e.target.value){
-                      setdayData(data[i])
-                    }
-                  }
-                  setday(e.target.value)
-                  isdone(true)
-                  if (document.getElementById("cour") != null) {
-                    document.getElementById("cour").options.selectedIndex = 0;
-                  }
-                }
+                get_courses(e.target.value)  
+              }
+              // if(e.target.value == ''){
+              //   isdone(false)
+              //   setcourse(null)
+              //   isover(false)
+              // }
+              // else{
+              //   setcourse(null)
+              //   isover(false)
+              //     for (let i = 0; i < data.length; i++) {
+              //       if(data[i].day == e.target.value){
+              //         setdayData(data[i])
+              //       }
+              //     }
+              //     setday(e.target.value)
+              //     isdone(true)
+              //     if (document.getElementById("cour") != null) {
+              //       document.getElementById("cour").options.selectedIndex = 0;
+              //     }
+              //   }
               }}>
               {data.map((item) => (
-                <option value={item.day}>{item.day}</option>
+                <option value={item}>{item}</option>
               ))}
             </Select>
           </InputGroup>
