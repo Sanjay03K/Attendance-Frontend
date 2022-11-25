@@ -52,6 +52,7 @@ function GeneralInformation() {
   const [i_load, is_i_load] = useState(false);
   const [i_start, set_i_start] = useState(null);
   const [i_end, set_i_end] = useState(null);
+  const [i_over, is_i_over] = useState(false);
 
   const [display_dept, set_display_dept] = useState(null);
 
@@ -196,8 +197,23 @@ function GeneralInformation() {
           toastIdRef.current = toast({ description: "No report found", status: 'info',isClosable: true })
         }
         else{
-          set_i_data(results.data);
-          is_i_load(false);
+          let lst = new Set(results.data.map((d)=>{
+            let keys = Object.keys(d)
+            let filtered = keys.filter(k=>{
+              if(k.indexOf(i_course)!=-1){return k}
+            })
+            if(filtered.length!=0){
+              return d.day;
+            }
+            }))
+          lst = [...lst];
+          if (lst[0] == undefined) {
+            toastIdRef.current = toast({ description: "No report found", status: 'info',isClosable: true })
+          } else {
+            set_i_data(lst)
+            set_final_course(results.data)
+            is_i_load(false);
+          }
         }
       }).catch((err)=>{
         if (err.response.data!=undefined) {
@@ -268,7 +284,9 @@ function GeneralInformation() {
                 </Box>
                 <Box>
                   <CardHeader mt="1em">
-                    <Button colorScheme='teal' variant='outline' style={{"width":"40em"}} onClick={()=>{isover(false); isinit(0); setsem(null); setyear(null); is_i_load(false); set_i_data([]); setcourse(null); }}>
+                    <Button colorScheme='teal' variant='outline' style={{"width":"40em"}} onClick={()=>{isover(false); isinit(0); setsem(null); setyear(null); is_i_load(false); set_i_data([]); setcourse(null); 
+                    set_final_attended([]); set_final_display([]); is_i_over(false)
+                    }}>
                       Department Report
                     </Button>
                   </CardHeader>
@@ -311,6 +329,7 @@ function GeneralInformation() {
                             is_i_load(false)
                             set_i_data([])
                             isover(false)
+                            set_final_display([])
                           }
                           else{
                             set_i_course(e.target.value.split('.')[0])
@@ -320,6 +339,7 @@ function GeneralInformation() {
                             is_i_load(true)
                             set_i_data([])
                             isover(false)
+                            set_final_display([])
                           }
                         }}>{under.length > 0 ? (
                           under.map((item) => (
@@ -502,6 +522,7 @@ function GeneralInformation() {
                         <Select placeholder='Select course' onChange={(e)=>{
                           if (e.target.value == '') {
                             toastIdRef.current = toast({ description: "Course not selected", status: 'info',isClosable: true })
+                            is_i_over(false)
                             is_i_load(false)
                             set_i_data([])
                             isover(false)
@@ -514,6 +535,7 @@ function GeneralInformation() {
                             is_i_load(true)
                             set_i_data([])
                             isover(false)
+                            is_i_over(false)
                           }
                         }}>{under.length > 0 ? (
                           under.map((item) => (
@@ -628,23 +650,26 @@ function GeneralInformation() {
                 }}
               >
                 <Select placeholder='Choose...' onChange={(e)=>{
+                  set_final_attended([])
                   if(e.target.value == ''){
-                    isover(false)
+                    set_final_display([])
+                    is_i_over(false)
                     setcourse(null)
                   }
                   else{
-                    isover(false)
-                      for (let i = 0; i < i_data.length; i++) {
-                        if(i_data[i].day == e.target.value){
-                          setcourse(JSON.parse(i_data[i][i_course])[0])
-                          isover(true)
-                          break;
-                        }
+                    is_i_over(false)
+                    let new_arr = []
+                    for (let i = 0; i < final_course.length; i++) {
+                      if (final_course[i].day == e.target.value) {
+                        new_arr.push(final_course[i])
                       }
+                    }
+                    set_final_display(new_arr)
+                    is_i_over(true)
                     }
                   }}>
                   {i_data.map((item) => (
-                    <option value={item.day}>{item.day}</option>
+                    <option value={item}>{item}</option>
                   ))}
                 </Select>
               </InputGroup>
@@ -875,6 +900,67 @@ function GeneralInformation() {
                               <Tr color="white.100">
                                 <Th color="white.100">{item.register_no}</Th>
                                 <Th color="white.100">{item[final_attended]}</Th>
+                              </Tr>
+                            </>
+                        )) 
+                      ) : (
+                      <></>
+                    )}
+                </Tbody>
+              </Table>
+            </CardBody>
+          </Card>
+        </>
+      ) : (
+        <></>
+      )
+    }
+
+    {
+      i_over ? (
+        <>
+        <br/>
+        <Card overflowX={{ sm: "scroll", xl: "hidden" }}>
+            <CardHeader p="6px 0px 22px 0px">
+              <Text fontSize="xl" color={textColor} fontWeight="bold">
+                Students List
+              </Text>
+            </CardHeader>
+            <CardBody>
+              <Table variant="simple" color={textColor}>
+                <Thead>
+                  <Tr my=".8rem" pl="0px" color="gray.400">
+                    <Th color="gray.400">Register No</Th>
+                    {
+                    final_display.length > 0 ? (
+                       Object.keys(final_display[0])
+                       .filter((value)=>{
+                        if (value!='day' && value!='register_no' && value!='pri_code' && value!='dept' && value!='year' && value!='sem' && value!='mailed') {
+                          final_attended.push(value)
+                          return value
+                        }
+                      })
+                       .map((value) => (
+                            <>
+                              <Th color="white.100">{value}</Th>
+                            </>
+                        )) 
+                      ) : (
+                      <></>
+                    )}
+                  </Tr>
+                </Thead>
+                <Tbody>
+                {final_display.length > 0 ? (
+                        final_display.map((item) => (
+                            <>
+                              <Tr color="white.100">
+                                <Th color="white.100">{item.register_no}</Th>
+                                {
+                                  final_attended.map((value) => (
+                                    <Th color="white.100">{item[value]}</Th>
+                                  ))
+                                }    
                               </Tr>
                             </>
                         )) 
