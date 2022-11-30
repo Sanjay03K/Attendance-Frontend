@@ -1,9 +1,9 @@
 // Change urls according to deployed server.
 
 // // Deployment URLS
-export let URL = "192.168.10.185:3000",
-  server_URL = "192.168.10.185:5000/";
+// export let URL = "218.248.16.182:3000",
+//   server_URL = "218.248.16.182:8080/";
 
 // Dev URLS
-// export let URL = "http://localhost:3000/",
-//   server_URL = "http://localhost:8080/";
+export let URL = "http://218.248.16.182:3000/",
+  server_URL = "http://218.248.16.182/";
