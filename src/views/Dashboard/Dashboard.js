@@ -13,6 +13,7 @@ import { useHistory } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 import { useToast } from '@chakra-ui/react'
 import axios from "axios";
+import TimeTable from "./TimeTableEdit";
 
 export default function Dashboard() {
   // Chakra Color Mode
@@ -53,7 +54,7 @@ export default function Dashboard() {
     },1000)
 
     let fetchdata = () =>{
-      axios.post("http://218.248.16.182/courses", {
+      axios.post("http://192.168.10.11:8080/courses", {
       email,
       auth_token,
       id 
@@ -101,7 +102,8 @@ export default function Dashboard() {
     var auth_token = localStorage.getItem("token")
     var code = localStorage.getItem("code")
     var id  = localStorage.getItem("id")
-    axios.post("http://218.248.16.182/attendance_marked", {
+
+    axios.post("http://192.168.10.11:8080/attendance_marked", {
       email,
       auth_token,
       code,
@@ -118,117 +120,228 @@ export default function Dashboard() {
       }
     })
   }
-
+  var type = localStorage.getItem("type")
   return (
-    <Flex flexDirection="column" pt={{ base: "400px", md: "75px" }}>
+    type==1?<><Flex flexDirection="column" pt={{ base: "400px", md: "75px" }}>
+    <Text
+      mb="15px"
+      ms="4px"
+      color={textColor}
+      fontWeight="bold"
+      fontSize="14px"
+    >Logged in as : {localStorage.getItem("name")}</Text> 
+   <Text
+      mb="15px"
+      ms="4px"
+      color={textColor}
+      fontWeight="bold"
+      fontSize="14px"
+    >Ongoing Classes</Text>
+    <SimpleGrid columns={{ sm: 1, md: 1, xl: 1 }} spacing="24px">
+      {ongo.length > 0 ? (
+        ongo.map((items) => (
+          <div style={{width:"100%",cursor:"pointer"}} onClick={()=>{
+            localStorage.setItem("dept",items.dept)
+            localStorage.setItem("year",items.year)
+            localStorage.setItem("sem",items.sem)
+            localStorage.setItem("code",items.code)
+            route_check()
+          }}>
+            <Card minH="100px">
+              <CardBody>
+              <Flex
+                flexDirection="column"
+                align="left"
+                w="100%"
+              >
+                <Text
+                    mb="5px"
+                    color={textColor}
+                    fontWeight="bold"
+                    fontSize="14px"
+                  >
+                    {items.name} &nbsp;&nbsp;( {items.code} )
+                </Text>
+                <br/>
+                <Text
+                    color={textColor}
+                    fontWeight="bold"
+                    fontSize="14px"
+                  >
+                    {"Staff Name : "} &nbsp;&nbsp; {localStorage.getItem("name")} 
+                </Text>
+              </Flex>
+            </CardBody>
+          </Card>
+        </div>
+      )) 
+      ) : (
+        <>
+        <marquee style={{color:"red"}}>No ongoing classes today</marquee>
+        </>
+      )}
+
       <Text
         mb="15px"
         ms="4px"
         color={textColor}
         fontWeight="bold"
         fontSize="14px"
-      >Logged in as : {localStorage.getItem("name")}</Text> 
-     <Text
+      >Upcoming Classes</Text>
+      {upco.length > 0 ? (
+          upco.map((items) => (
+            <div style={{width:"25%",cursor:"pointer"}} onClick={()=>{toast({
+                  title: `This is an upcoming event`,
+                  status: 'info',
+                  isClosable: true,
+                })}}>  
+              
+                <Card minH="100px">
+                  <CardBody>
+                    <Flex
+                      flexDirection="column"
+                      align="left"
+                      // justify="center"
+                      w="100%"
+                    >
+                        <Text
+                          mb="5px"
+                          color={textColor}
+                          fontWeight="bold"
+                          fontSize="14px"
+                        >
+                          {items.name} &nbsp;&nbsp;( {items.code} )
+                      </Text>
+                      <br/>
+                      <Text
+                          color={textColor}
+                          fontWeight="bold"
+                          fontSize="14px"
+                        >
+                          {"Staff Name : "} &nbsp;&nbsp; {localStorage.getItem("name")} 
+                      </Text>
+                    </Flex>
+                  </CardBody>
+                </Card>
+            </div>
+          ))
+        ) : (
+          <>
+            <marquee style={{color:"red"}}>No upcoming classes today</marquee>
+          </>
+      )}
+    </SimpleGrid>
+  </Flex><TimeTable/></>: <Flex flexDirection="column" pt={{ base: "400px", md: "75px" }}>
+    <Text
+      mb="15px"
+      ms="4px"
+      color={textColor}
+      fontWeight="bold"
+      fontSize="14px"
+    >Logged in as : {localStorage.getItem("name")}</Text> 
+   <Text
+      mb="15px"
+      ms="4px"
+      color={textColor}
+      fontWeight="bold"
+      fontSize="14px"
+    >Ongoing Classes</Text>
+    <SimpleGrid columns={{ sm: 1, md: 1, xl: 1 }} spacing="24px">
+      {ongo.length > 0 ? (
+        ongo.map((items) => (
+          <div style={{width:"100%",cursor:"pointer"}} onClick={()=>{
+            localStorage.setItem("dept",items.dept)
+            localStorage.setItem("year",items.year)
+            localStorage.setItem("sem",items.sem)
+            localStorage.setItem("code",items.code)
+            route_check()
+          }}>
+            <Card minH="100px">
+              <CardBody>
+              <Flex
+                flexDirection="column"
+                align="left"
+                w="100%"
+              >
+                <Text
+                    mb="5px"
+                    color={textColor}
+                    fontWeight="bold"
+                    fontSize="14px"
+                  >
+                    {items.name} &nbsp;&nbsp;( {items.code} )
+                </Text>
+                <br/>
+                <Text
+                    color={textColor}
+                    fontWeight="bold"
+                    fontSize="14px"
+                  >
+                    {"Staff Name : "} &nbsp;&nbsp; {localStorage.getItem("name")} 
+                </Text>
+              </Flex>
+            </CardBody>
+          </Card>
+        </div>
+      )) 
+      ) : (
+        <>
+        <marquee style={{color:"red"}}>No ongoing classes today</marquee>
+        </>
+      )}
+
+      <Text
         mb="15px"
         ms="4px"
         color={textColor}
         fontWeight="bold"
         fontSize="14px"
-      >Ongoing Classes</Text>
-      <SimpleGrid columns={{ sm: 1, md: 1, xl: 1 }} spacing="24px">
-        {ongo.length > 0 ? (
-          ongo.map((items) => (
-            <div style={{width:"100%",cursor:"pointer"}} onClick={()=>{
-              localStorage.setItem("dept",items.dept)
-              localStorage.setItem("year",items.year)
-              localStorage.setItem("sem",items.sem)
-              localStorage.setItem("code",items.code)
-              route_check()
-            }}>
-              <Card minH="100px">
-                <CardBody>
-                <Flex
-                  flexDirection="column"
-                  align="left"
-                  w="100%"
-                >
-                  <Text
-                      mb="5px"
-                      color={textColor}
-                      fontWeight="bold"
-                      fontSize="14px"
+      >Upcoming Classes</Text>
+      {upco.length > 0 ? (
+          upco.map((items) => (
+            <div style={{width:"25%",cursor:"pointer"}} onClick={()=>{toast({
+                  title: `This is an upcoming event`,
+                  status: 'info',
+                  isClosable: true,
+                })}}>  
+              
+                <Card minH="100px">
+                  <CardBody>
+                    <Flex
+                      flexDirection="column"
+                      align="left"
+                      // justify="center"
+                      w="100%"
                     >
-                      {items.name} &nbsp;&nbsp;( {items.code} )
-                  </Text>
-                  <br/>
-                  <Text
-                      color={textColor}
-                      fontWeight="bold"
-                      fontSize="14px"
-                    >
-                      {"Staff Name : "} &nbsp;&nbsp; {localStorage.getItem("name")} 
-                  </Text>
-                </Flex>
-              </CardBody>
-            </Card>
-          </div>
-        )) 
+                        <Text
+                          mb="5px"
+                          color={textColor}
+                          fontWeight="bold"
+                          fontSize="14px"
+                        >
+                          {items.name} &nbsp;&nbsp;( {items.code} )
+                      </Text>
+                      <br/>
+                      <Text
+                          color={textColor}
+                          fontWeight="bold"
+                          fontSize="14px"
+                        >
+                          {"Staff Name : "} &nbsp;&nbsp; {localStorage.getItem("name")} 
+                      </Text>
+                    </Flex>
+                  </CardBody>
+                </Card>
+            </div>
+          ))
         ) : (
           <>
-          <marquee style={{color:"red"}}>No ongoing classes today</marquee>
+            <marquee style={{color:"red"}}>No upcoming classes today</marquee>
           </>
-        )}
+      )}
+    </SimpleGrid>
+  </Flex>   
 
-        <Text
-          mb="15px"
-          ms="4px"
-          color={textColor}
-          fontWeight="bold"
-          fontSize="14px"
-        >Upcoming Classes</Text>
-        {upco.length > 0 ? (
-            upco.map((items) => (
-              <div style={{width:"25%",cursor:"pointer"}} onClick={()=>{toast({
-                    title: `This is an upcoming event`,
-                    status: 'info',
-                    isClosable: true,
-                  })}}>  
-                
-                  <Card minH="100px">
-                    <CardBody>
-                      <Flex
-                        flexDirection="column"
-                        align="left"
-                        // justify="center"
-                        w="100%"
-                      >
-                          <Text
-                            mb="5px"
-                            color={textColor}
-                            fontWeight="bold"
-                            fontSize="14px"
-                          >
-                            {items.name} &nbsp;&nbsp;( {items.code} )
-                        </Text>
-                        <br/>
-                        <Text
-                            color={textColor}
-                            fontWeight="bold"
-                            fontSize="14px"
-                          >
-                            {"Staff Name : "} &nbsp;&nbsp; {localStorage.getItem("name")} 
-                        </Text>
-                      </Flex>
-                    </CardBody>
-                  </Card>
-              </div>
-            ))
-          ) : (
-            <>
-              <marquee style={{color:"red"}}>No upcoming classes today</marquee>
-            </>
-        )}
-      </SimpleGrid>
-    </Flex>
+    
   );
 }

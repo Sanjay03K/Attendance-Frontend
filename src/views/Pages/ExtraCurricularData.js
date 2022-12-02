@@ -55,7 +55,7 @@ function ExtraCurricularData() {
     var year = localStorage.getItem("year")
     var sem = localStorage.getItem("sem")
     var id  = localStorage.getItem("id")
-    axios.post("http://218.248.16.182/attendance_marked", {
+    axios.post("http://192.168.10.11:8080/attendance_marked", {
       email,
       auth_token,
       data,
@@ -65,7 +65,7 @@ function ExtraCurricularData() {
       code,
       id
     }).then(()=>{
-      axios.post("http://218.248.16.182/mobile",{
+      axios.post("http://192.168.10.11:8080/mobile",{
         email,
         auth_token,
         data,
@@ -104,7 +104,7 @@ function ExtraCurricularData() {
     var id  = localStorage.getItem("id")
     var code = localStorage.getItem("code")
 
-    axios.post("http://218.248.16.182/getdetails", {
+    axios.post("http://192.168.10.11:8080/getdetails", {
       email,
       auth_token,
       dept,

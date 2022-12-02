@@ -46,7 +46,7 @@ function SignIn() {
     else{
       let res = null
       try {
-        res = await axios.post('http://218.248.16.182/login', {
+        res = await axios.post('http://192.168.10.11:8080/login', {
           email,
           password, 
         })
@@ -54,6 +54,8 @@ function SignIn() {
         localStorage.setItem("email", res.data.email);
         localStorage.setItem("name", res.data.name);
         localStorage.setItem("id", res.data.id);
+        // alert(res.data.type)
+        localStorage.setItem("type",res.data.type)
         history.push("/admin/dashboard")
       } catch (err) {
           if (res == null && err.response == undefined) {

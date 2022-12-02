@@ -2,14 +2,12 @@
 import Dashboard from "views/Dashboard/Dashboard.js";
 import GeneralInformation from "views/Dashboard/GeneralInformation";
 import Profile from "views/Dashboard/Profile.js";
+import TimeTable from "views/Dashboard/TimeTableEdit";
 
 import {
   HomeIcon,
   StatsIcon,
-  CreditIcon,
   PersonIcon,
-  DocumentIcon,
-  RocketIcon,
 } from "components/Icons/Icons";
 
 var dashRoutes = [
@@ -27,6 +25,7 @@ var dashRoutes = [
     component: GeneralInformation,
     layout: "/admin",
   },
+
   {
     path: "/profile",
     name: "Profile",
@@ -36,4 +35,21 @@ var dashRoutes = [
     layout: "/admin",
   },
 ];
+
+
+// let type = localStorage.getItem("type")
+// console.log("HELLO "+type)
+
+// if(type === 1){
+
+//   dashRoutes.push(  {
+//     path: "/timetable_edit",
+//     name: "TimeTable",
+//     icon: <PersonIcon color="inherit" />,
+//     secondaryNavbar: true,
+//     component: TimeTable,
+//     layout: "/admin",
+//   })
+// }
+
 export default dashRoutes;

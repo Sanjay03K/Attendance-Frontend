@@ -69,7 +69,7 @@ function GeneralInformation() {
   useEffect(async () => {
     var email = localStorage.getItem("email")
     var auth_token = localStorage.getItem("token")
-    axios.post("http://218.248.16.182/segregation",{
+    axios.post("http://192.168.10.11:8080/segregation",{
       email,
       auth_token
     }).then((results)=>{
@@ -87,7 +87,7 @@ function GeneralInformation() {
       var dept = display_dept
       var email = localStorage.getItem("email")
       var auth_token = localStorage.getItem("token")
-      axios.post("http://218.248.16.182/report", {
+      axios.post("http://192.168.10.11:8080/report", {
         email,
         auth_token,
         year,
@@ -121,7 +121,7 @@ function GeneralInformation() {
       toastIdRef.current = toast({ description: "Select all the fields", status: 'warning',isClosable: true })
     }
     else{
-      axios.post("http://218.248.16.182/full_report", {
+      axios.post("http://192.168.10.11:8080/full_report", {
         email,
         auth_token,
         date,
@@ -151,7 +151,7 @@ function GeneralInformation() {
     var email = localStorage.getItem("email")
     var auth_token = localStorage.getItem("token")
     var dept = display_dept
-    axios.post("http://218.248.16.182/get_courses",{
+    axios.post("http://192.168.10.11:8080/get_courses",{
       email,
       auth_token,
       day,
@@ -183,7 +183,7 @@ function GeneralInformation() {
       toastIdRef.current = toast({ description: "Select all the fields", status: 'warning',isClosable: true })
     }
     else{
-      axios.post("http://218.248.16.182/individual",{
+      axios.post("http://192.168.10.11:8080/individual",{
         email,
         auth_token,
         start,
@@ -225,7 +225,7 @@ function GeneralInformation() {
 
   const downloadXLSFile = async () => {
     var dept = display_dept;
-    let s_url = "http://218.248.16.182/download_report?start="+start+"&end="+end+"&email="+localStorage.getItem("email")+"&sem="+sem+"&dept="+dept+"&year="+year+"&auth_token="+localStorage.getItem("token")
+    let s_url = "http://192.168.10.11:8080/download_report?start="+start+"&end="+end+"&email="+localStorage.getItem("email")+"&sem="+sem+"&dept="+dept+"&year="+year+"&auth_token="+localStorage.getItem("token")
     const headers = {'Content-Type': 'blob'};
     const config = {method: 'GET', url: s_url, responseType: 'arraybuffer', headers};
     try {
@@ -244,7 +244,7 @@ function GeneralInformation() {
   }
 
   const i_downloadXLSFile = async () => {
-    let s_url = "http://218.248.16.182/download_indiv?start="+i_start+"&end="+i_end+"&email="+localStorage.getItem("email")+"&sem="+i_sem+"&dept="+i_dept+"&year="+i_year+"&auth_token="+localStorage.getItem("token")+"&course="+i_course;
+    let s_url = "http://192.168.10.11:8080/download_indiv?start="+i_start+"&end="+i_end+"&email="+localStorage.getItem("email")+"&sem="+i_sem+"&dept="+i_dept+"&year="+i_year+"&auth_token="+localStorage.getItem("token")+"&course="+i_course;
     const headers = {'Content-Type': 'blob'};
     const config = {method: 'GET', url: s_url, responseType: 'arraybuffer', headers};
     try {
